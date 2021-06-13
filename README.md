@@ -1,2 +1,2 @@
 # smcr
-Simple State Machine for Crystal
+State Machine for Crystal
