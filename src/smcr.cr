@@ -1,6 +1,7 @@
 # TODO: Write documentation for `Smcr`
 module Smcr
-  VERSION = "0.0.1" # {{ `shards version "#{__DIR__}"`.chomp.stringify }}
-
-  # TODO: Put your code here
+  VERSION       = {{ `shards version "#{__DIR__}"`.chomp.stringify }}
+  DEBUG_ENABLED = ENV.keys.includes?("CRYSTAL_DEBUG") && !ENV["CRYSTAL_DEBUG"].empty?
 end
+
+p! Smcr::VERSION if Smcr::DEBUG_ENABLED

@@ -24,7 +24,27 @@ TODO: Write usage instructions here
 
 ## Development
 
-TODO: Write development instructions here
+To enable debug comment logging, set `CRYSTAL_DEBUG` env variable to anything other than an empty string. For example:
+
+```
+# debug logging enabled
+CRYSTAL_DEBUG=soME_nOn_Blank_VALue crystal spec
+
+# debug logging disabled
+CRYSTAL_DEBUG= crystal spec
+```
+
+This will show at least:
+```
+Smcr::VERSION # => "0.1.0"
+```
+
+Use this to output additional debug info like:
+```
+p! Smcr::VERSION if Smcr::DEBUG_ENABLED
+```
+
+
 
 ## Contributing
 
