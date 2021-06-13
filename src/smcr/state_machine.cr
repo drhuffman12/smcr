@@ -1,43 +1,21 @@
+# require "./concerns/aliases.cr"
+# require "./concerns/props_and_inits.cr"
+
 module Smcr
-  alias StateValue = Int32 # aka internal representation of an Enum's value
-
-  # alias CurrentErrors = Hash(Symbol, String)
-  # alias State = T
-  alias Tick = Int32        # Bigger?
-  alias HistorySize = UInt8 # Bigger?
-  # alias History = Array(StateChanges)
-
-  alias StatesAllowed = Array(StateValue)
-  alias PathsAllowed = Hash(StateValue, StatesAllowed)
-
-  alias StateChangedAttempt = NamedTuple(
-    forced: Bool,
-    from: {state_value: StateValue, tick: Tick},
-    to: {state_value: StateValue, tick: Tick})
-  alias CallbackResponse = NamedTuple(
-    succeeded: Bool,
-    code: Int32, # e.g.: mimic HTTP codes
-    message: String)
-  alias StateChange = NamedTuple(
-    state_value_became: StateValue,
-    tick_became: Tick,
-    state_change_attempted: StateChangedAttempt,
-    callback_response: CallbackResponse)
-  alias StateChangeHistory = Array(StateChange)
-
-  alias CurrentErrors = Hash(String, String)
+  # include Aliases
 
   class StateMachine(State)
     include JSON::Serializable
+    # include PropsAndInits(State)
 
-    # STATE_NOT_SET = :state_not_set
-    ERROR_KEY_PATHS_ALLOWED = "paths_allowed"
+    ERROR_KEY_PATHS_ALLOWED       = "paths_allowed"
+    ERROR_KEY_STATE_CHANGE_FAILED = "history"
 
     getter state_default : State
     getter history_size : HistorySize
     getter tick : Tick
     getter state : State
-    getter history : StateChangeHistory
+    getter history : History
     getter paths_allowed : PathsAllowed
 
     getter errors : CurrentErrors
@@ -63,7 +41,7 @@ module Smcr
       history_size : HistorySize? = nil,
       tick : Tick? = nil,
       state : State? = nil,
-      history : StateChangeHistory? = nil,
+      history : History? = nil,
       paths_allowed : PathsAllowed? = nil
     )
       @history_size = history_size ? history_size : HistorySize.new(10)
@@ -72,7 +50,7 @@ module Smcr
       @state_default = state_default ? state_default : State.values.first
       @state = state ? state : @state_default
 
-      @history = history ? history : StateChangeHistory.new
+      @history = history ? history : History.new
       @paths_allowed = paths_allowed ? paths_allowed : PathsAllowed.new # initial_default_path
       init_paths
 
@@ -94,18 +72,11 @@ module Smcr
       @errors.empty?
     end
 
-    ####
+    # # PATHS
 
     def paths_allowed?(state_from, state_to)
       @paths_allowed.keys.includes?(state_from) && @paths_allowed[state_from].includes?(state_to)
     end
-
-    # def initial_default_path
-    #   value_first = State.values.first.value
-    #   values_all = State.values.map(&.value) # .map{|val| val}
-    #   values_other = values_all - [value_first]
-    #   {value_first => values_other}
-    # end
 
     def init_paths
       self.class.state_values.each do |state_from|
@@ -128,6 +99,63 @@ module Smcr
 
     def remove_path(state_from, state_to)
       @paths_allowed[state_from.value].delete(state_to.value) if @paths_allowed[state_from.value].includes?(state_to.value)
+    end
+
+    # # ATTEMPT STATE CHANGE
+
+    def attempt_state_change(
+      forced : Bool,
+      # from_tick : Tick, from_state : State,
+      try_tick : Tick, try_state : State
+    )
+      response = callbacks_for(
+        forced: forced,
+        # from_tick: from_tick, from_state: from_state,
+        try_tick: try_tick, try_state: try_state
+      )
+
+      attempt = {
+        forced: forced,
+        from:   {tick: tick, state_value: state.value},
+        try:    {tick: try_tick, state_value: try_state.value},
+        # state_value_became: StateValue,
+        # tick_became: Tick,
+        # state_change_attempted: StateChangedAttempt,
+        callback_response: response,
+      }
+
+      if response[:succeeded]
+        @tick = response[:to][:tick]
+        @state = response[:to][:state_value]
+      else
+        @errors[ERROR_KEY_STATE_CHANGE_FAILED]
+        log_failed_state_change(attempt)
+      end
+
+      @history << attempt
+    end
+
+    # # Modify these methods in sub-classes:
+
+    def callbacks_for(
+      forced : Bool,
+      # from_tick : Tick, from_state : State,
+      try_tick : Tick, try_state : State
+    ) : CallbackResponse
+      # Put callbacks in here in sub-class
+      # TODO ...
+
+      # Must return data with the following keys (hard-code values for now):
+      {
+        succeeded: succeeded,
+        code:      code, # e.g.: mimic HTTP codes,
+        to:        to,
+        message:   message,
+      }
+    end
+
+    def log_failed_state_change(attempt)
+      # Normal use should be to Sub-class and mod this method to handle state change failures
     end
   end
 end
