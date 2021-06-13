@@ -37,13 +37,13 @@ module Smcr
     getter history_size : HistorySize
     getter tick : Tick
     getter state : State
-    getter history : StateChangeHistory # TODO!
+    getter history : StateChangeHistory
     getter paths_allowed : PathsAllowed
 
     getter errors : CurrentErrors
 
     def self.state_class
-      State.class # Needed? Maybe just in case we want to programmatically remind our selves what the 'State' class is?
+      State # Needed? Maybe just in case we want to programmatically remind our selves what the 'State' class is?
     end
 
     def self.state_names
@@ -63,7 +63,7 @@ module Smcr
       history_size : HistorySize? = nil,
       tick : Tick? = nil,
       state : State? = nil,
-      history : StateChangeHistory? = nil, # TODO!
+      history : StateChangeHistory? = nil,
       paths_allowed : PathsAllowed? = nil
     )
       @history_size = history_size ? history_size : HistorySize.new(10)
@@ -72,18 +72,22 @@ module Smcr
       @state_default = state_default ? state_default : State.values.first
       @state = state ? state : @state_default
 
-      @history = history ? history : StateChangeHistory.new # TODO!
-      @paths_allowed = paths_allowed ? paths_allowed : initial_default_path
+      @history = history ? history : StateChangeHistory.new
+      @paths_allowed = paths_allowed ? paths_allowed : PathsAllowed.new # initial_default_path
+      init_paths
 
-      @errors = validate
+      @errors = CurrentErrors.new
+      validate
     end
 
     def validate
-      errors = CurrentErrors.new
+      @errors = CurrentErrors.new
 
-      errors[ERROR_KEY_PATHS_ALLOWED] = "must be an mapping of state to array of states" if @paths_allowed.keys.empty?
+      if @paths_allowed.keys.empty? || @paths_allowed.values.map(&.empty?).all?
+        @errors[ERROR_KEY_PATHS_ALLOWED] = "must be an mapping of state to array of states"
+      end
 
-      errors
+      @errors
     end
 
     def valid?
@@ -96,20 +100,34 @@ module Smcr
       @paths_allowed.keys.includes?(state_from) && @paths_allowed[state_from].includes?(state_to)
     end
 
-    def initial_default_path
-      value_first = State.values.first.value
-      values_all = State.values.map(&.value) # .map{|val| val}
-      values_other = values_all - [value_first]
-      {value_first => values_other}
+    # def initial_default_path
+    #   value_first = State.values.first.value
+    #   values_all = State.values.map(&.value) # .map{|val| val}
+    #   values_other = values_all - [value_first]
+    #   {value_first => values_other}
+    # end
+
+    def init_paths
+      self.class.state_values.each do |state_from|
+        init_paths_from(state_from)
+      end
+    end
+
+    def init_paths_from(state_from)
+      @paths_allowed[state_from.value] = StatesAllowed.new
     end
 
     def add_path(state_from, state_to)
-      @paths_allowed[state_from.value] = StatesAllowed.new unless @paths_allowed.keys.includes?(state_from.value)
+      init_paths_from(state_from) unless @paths_allowed.keys.includes?(state_from.value)
 
       # You can effectively re-order 'state_to' values by re-add a 'state_to' value (which gets moved to the end).
-      @paths_allowed[state_from.value].delete(state_to.value) if @paths_allowed[state_from.value].includes?(state_to.value)
+      remove_path(state_from, state_to)
 
       @paths_allowed[state_from.value] << state_to.value
+    end
+
+    def remove_path(state_from, state_to)
+      @paths_allowed[state_from.value].delete(state_to.value) if @paths_allowed[state_from.value].includes?(state_to.value)
     end
   end
 end
