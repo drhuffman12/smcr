@@ -37,7 +37,7 @@ module Smcr
     getter history_size : HistorySize
     getter tick : Tick
     getter state : State
-    # getter history : StateChangeHistory # TODO!
+    getter history : StateChangeHistory # TODO!
     getter paths_allowed : PathsAllowed
 
     getter errors : CurrentErrors
@@ -63,7 +63,7 @@ module Smcr
       history_size : HistorySize? = nil,
       tick : Tick? = nil,
       state : State? = nil,
-      # history : StateChangeHistory? = nil, # TODO!
+      history : StateChangeHistory? = nil, # TODO!
       paths_allowed : PathsAllowed? = nil
     )
       @history_size = history_size ? history_size : HistorySize.new(10)
@@ -72,7 +72,7 @@ module Smcr
       @state_default = state_default ? state_default : State.values.first
       @state = state ? state : @state_default
 
-      # @history = history ? history : StateChangeHistory.new # TODO!
+      @history = history ? history : StateChangeHistory.new # TODO!
       @paths_allowed = paths_allowed ? paths_allowed : initial_default_path
 
       @errors = validate

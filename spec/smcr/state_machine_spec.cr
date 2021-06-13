@@ -37,7 +37,7 @@ Spectator.describe Smcr::StateMachine do
       let(history_size) { 2.to_u8 }
       let(tick) { 3 }
       let(state) { LightColors::Blue }
-      # let(history) { nil } # TODO!
+      let(history) { nil } # TODO!
       let(paths_allowed) { nil }
 
       let(state_default_expected) { state_default }
@@ -60,7 +60,7 @@ Spectator.describe Smcr::StateMachine do
           history_size: history_size,
           tick: tick,
           state: state,
-          # history: history, # TODO!
+          history: history, # TODO!
           paths_allowed: paths_allowed
         )
       }
@@ -98,9 +98,9 @@ Spectator.describe Smcr::StateMachine do
           expect(state_machine.state).to eq(state_expected)
         end
 
-        # it "history" do # TODO!
-        #   expect(state_machine.history).to eq(history_expected)
-        # end
+        it "history" do # TODO!
+          expect(state_machine.history).to eq(history_expected)
+        end
 
         it "paths_allowed" do
           expect(state_machine.paths_allowed).to eq(paths_allowed_expected)
