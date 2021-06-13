@@ -16,6 +16,10 @@ State Machine for Crystal
 
 ## Usage
 
+For the states, we use Enums, which are importable from JSON.
+You might think that we should use Symbols, but those are NOT JSON import-able!
+See: https://forum.crystal-lang.org/t/how-to-do-from-json-with-symbol-variables/3379/2 .
+
 ```crystal
 require "smcr"
 ```
