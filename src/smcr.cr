@@ -1,4 +1,5 @@
 # TODO: Write documentation for `Smcr`
+require "json"
 require "./smcr/*"
 
 module Smcr
