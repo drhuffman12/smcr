@@ -39,7 +39,7 @@ Spectator.describe Smcr::StateMachine do
     let(history_size_expected) { history_size }
     let(tick_expected) { tick }
     let(state_expected) { state }
-    let(history_expected) { Smcr::StateChangeHistory.new }
+    let(history_expected) { Smcr::History.new }
 
     let(paths_allowed_initially_expected) {
       {
@@ -249,6 +249,10 @@ Spectator.describe Smcr::StateMachine do
           expect(state_machine.paths_allowed).to eq(paths_allowed_updated_expected_2)
         end
       end
+    end
+
+    describe "#attempt_state_change" do
+      # TODO
     end
   end
 end
