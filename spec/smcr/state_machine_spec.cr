@@ -23,6 +23,25 @@ Spectator.describe Smcr::StateMachine do
       }
     }
 
+    describe "to/from/to json" do
+      let(to_json) { state_machine.to_json }
+      let(from_json) { Smcr::StateMachine.from_json(to_json) }
+      let(to_json2) { from_json.to_json }
+
+      # simple check
+      it "JSON values match" do
+        expect(to_json).to eq(to_json2)
+      end
+
+      # it "instance sizes match" do
+      #   expect(state_machine).not_to be_nil
+      #   # sm = Smcr::StateMachine.new
+      #   state_machine_size = instance_sizeof(Smcr::StateMachine.new)
+      #   from_json_size = instance_sizeof(from_json)
+      #   expect(state_machine_size).to eq(from_json_size)
+      # end
+    end
+
     describe "#initialize" do
       context "sets values for" do
         it "states_allowed" do
