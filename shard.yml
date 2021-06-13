@@ -7,3 +7,15 @@ authors:
 crystal: 1.0.0
 
 license: MIT
+
+dependencies:
+  spectator:
+    gitlab: arctic-fox/spectator
+    branch: master
+  faker:
+    github: askn/faker
+
+development_dependencies:  
+  ameba:
+    # TODO: Windows Compatibility? See: https://github.com/crystal-ameba/ameba/issues/230
+    github: crystal-ameba/ameba

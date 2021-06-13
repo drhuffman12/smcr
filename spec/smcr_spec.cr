@@ -1,9 +1,9 @@
 require "./spec_helper"
 
-describe Smcr do
-  # TODO: Write tests
-
-  it "works" do
-    false.should eq(true)
+Spectator.describe Smcr do
+  describe "Smcr::VERSION" do
+    it "is defined" do
+      expect(Smcr::VERSION).to be_a(String)
+    end
   end
 end
