@@ -29,10 +29,10 @@ Spectator.describe Smcr::StateMachine do
     end
 
     describe "#initialize" do
-      # let(states_allowed) { [:off, :red, :green, :blue] }
       let(state_names_expected) { ["Off", "Red", "Green", "Blue"] }
       let(state_values_expected) { [LightColors::Off, LightColors::Red, LightColors::Green, LightColors::Blue] }
       let(state_internal_values_expected) { [0, 1, 2, 3] }
+
       let(state_default) { LightColors::Off }
       let(history_size) { 2.to_u8 }
       let(tick) { 3 }
@@ -56,7 +56,6 @@ Spectator.describe Smcr::StateMachine do
 
       let(state_machine) {
         Smcr::StateMachine.new(
-          # states_allowed: states_allowed,
           state_default: state_default,
           history_size: history_size,
           tick: tick,

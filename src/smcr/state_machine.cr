@@ -33,7 +33,6 @@ module Smcr
     # STATE_NOT_SET = :state_not_set
     ERROR_KEY_PATHS_ALLOWED = "paths_allowed"
 
-    # getter states_allowed : Array(T) = T.values
     getter state_default : State
     getter history_size : HistorySize
     getter tick : Tick
@@ -60,7 +59,6 @@ module Smcr
     end
 
     def initialize(
-      # states_allowed : StatesAllowed? = nil,
       state_default : State? = nil,
       history_size : HistorySize? = nil,
       tick : Tick? = nil,
@@ -68,7 +66,6 @@ module Smcr
       # history : StateChangeHistory? = nil, # TODO!
       paths_allowed : PathsAllowed? = nil
     )
-      # @states_allowed = states_allowed ? states_allowed : StatesAllowed.new
       @history_size = history_size ? history_size : HistorySize.new(10)
       @tick = tick ? tick : Tick.new(0)
 
@@ -94,10 +91,6 @@ module Smcr
     end
 
     ####
-
-    # def state_allowed?(state_example)
-    #   @states_allowed.includes?(state_example)
-    # end
 
     def paths_allowed?(state_from, state_to)
       @paths_allowed.keys.includes?(state_from) && @paths_allowed[state_from].includes?(state_to)
