@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Crystal Docs 0.36.1">
+<meta name="crystal_docs.project_version" content="0.1.1">
+<meta name="crystal_docs.project_name" content="smcr">
+
+
+
+<link href="../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../js/doc.js"></script>
+
+  <meta name="repository-name" content="smcr">
+  <title>Smcr::StateMachine(State) - smcr 0.1.1</title>
+  <script type="text/javascript">
+    CrystalDocs.base_path = "../";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="../index.html">
+          smcr
+        </a>
+      </h1>
+
+      <span class="project-version">
+        0.1.1
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class="parent open current" data-id="smcr/Smcr" data-name="smcr">
+      <a href="../Smcr.html">Smcr</a>
+      
+        <ul>
+  
+  <li class=" " data-id="smcr/Smcr/CallbackResponse" data-name="smcr::callbackresponse">
+      <a href="../Smcr/CallbackResponse.html">CallbackResponse</a>
+      
+    </li>
+  
+  <li class=" " data-id="smcr/Smcr/CurrentErrors" data-name="smcr::currenterrors">
+      <a href="../Smcr/CurrentErrors.html">CurrentErrors</a>
+      
+    </li>
+  
+  <li class=" " data-id="smcr/Smcr/HistorySize" data-name="smcr::historysize">
+      <a href="../Smcr/HistorySize.html">HistorySize</a>
+      
+    </li>
+  
+  <li class=" " data-id="smcr/Smcr/PathsAllowed" data-name="smcr::pathsallowed">
+      <a href="../Smcr/PathsAllowed.html">PathsAllowed</a>
+      
+    </li>
+  
+  <li class=" " data-id="smcr/Smcr/StateChange" data-name="smcr::statechange">
+      <a href="../Smcr/StateChange.html">StateChange</a>
+      
+    </li>
+  
+  <li class=" " data-id="smcr/Smcr/StateChangedAttempt" data-name="smcr::statechangedattempt">
+      <a href="../Smcr/StateChangedAttempt.html">StateChangedAttempt</a>
+      
+    </li>
+  
+  <li class=" " data-id="smcr/Smcr/StateChangeHistory" data-name="smcr::statechangehistory">
+      <a href="../Smcr/StateChangeHistory.html">StateChangeHistory</a>
+      
+    </li>
+  
+  <li class=" current" data-id="smcr/Smcr/StateMachine" data-name="smcr::statemachine(state)">
+      <a href="../Smcr/StateMachine.html">StateMachine</a>
+      
+    </li>
+  
+  <li class=" " data-id="smcr/Smcr/StatesAllowed" data-name="smcr::statesallowed">
+      <a href="../Smcr/StatesAllowed.html">StatesAllowed</a>
+      
+    </li>
+  
+  <li class=" " data-id="smcr/Smcr/StateValue" data-name="smcr::statevalue">
+      <a href="../Smcr/StateValue.html">StateValue</a>
+      
+    </li>
+  
+  <li class=" " data-id="smcr/Smcr/Tick" data-name="smcr::tick">
+      <a href="../Smcr/Tick.html">Tick</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">class</span> Smcr::StateMachine(State)
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../Smcr/StateMachine.html">Smcr::StateMachine(State)</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="included-modules" class="anchor" href="#included-modules">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Included Modules
+  </h2>
+  <ul class="other-types-list">
+    
+      <li class="other-type">JSON::Serializable</li>
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Defined in:
+  </h2>
+  
+    
+      smcr/state_machine.cr
+    
+    <br/>
+  
+
+
+
+  
+    <h2>
+      <a id="constant-summary" class="anchor" href="#constant-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+      Constant Summary
+    </h2>
+  
+  <dl>
+    
+      <dt class="entry-const" id="ERROR_KEY_PATHS_ALLOWED">
+        <strong>ERROR_KEY_PATHS_ALLOWED</strong> = <code><span class="s">&quot;paths_allowed&quot;</span></code>
+      </dt>
+      
+      <dd class="entry-const-doc">
+        <p>STATE_NOT_SET = :state_not_set</p>
+      </dd>
+      
+    
+  </dl>
+
+
+
+  <h2>
+    <a id="constructors" class="anchor" href="#constructors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructors
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new(pull:JSON::PullParser)-class-method" class="signature"><strong>.new</strong>(pull : JSON::PullParser)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#new(state_default:State?=nil,history_size:HistorySize?=nil,tick:Tick?=nil,state:State?=nil,history:StateChangeHistory?=nil,paths_allowed:PathsAllowed?=nil)-class-method" class="signature"><strong>.new</strong>(state_default : State? = <span class="n">nil</span>, history_size : HistorySize? = <span class="n">nil</span>, tick : Tick? = <span class="n">nil</span>, state : State? = <span class="n">nil</span>, history : StateChangeHistory? = <span class="n">nil</span>, paths_allowed : PathsAllowed? = <span class="n">nil</span>)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <h2>
+    <a id="class-method-summary" class="anchor" href="#class-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Class Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#state_class-class-method" class="signature"><strong>.state_class</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#state_internal_values-class-method" class="signature"><strong>.state_internal_values</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#state_names-class-method" class="signature"><strong>.state_names</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#state_values-class-method" class="signature"><strong>.state_values</strong></a>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#add_path(state_from,state_to)-instance-method" class="signature"><strong>#add_path</strong>(state_from, state_to)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#errors:CurrentErrors-instance-method" class="signature"><strong>#errors</strong> : CurrentErrors</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#history:StateChangeHistory-instance-method" class="signature"><strong>#history</strong> : StateChangeHistory</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#history_size:HistorySize-instance-method" class="signature"><strong>#history_size</strong> : HistorySize</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#initial_default_path-instance-method" class="signature"><strong>#initial_default_path</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#paths_allowed:PathsAllowed-instance-method" class="signature"><strong>#paths_allowed</strong> : PathsAllowed</a>
+        
+          <div class="summary"><p><span class="flag orange">TODO</span> !</p></div>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#paths_allowed?(state_from,state_to)-instance-method" class="signature"><strong>#paths_allowed?</strong>(state_from, state_to)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#state:State-instance-method" class="signature"><strong>#state</strong> : State</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#state_default:State-instance-method" class="signature"><strong>#state_default</strong> : State</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#tick:Tick-instance-method" class="signature"><strong>#tick</strong> : Tick</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#valid?-instance-method" class="signature"><strong>#valid?</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#validate-instance-method" class="signature"><strong>#validate</strong></a>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+<div class="methods-inherited">
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+  <h2>
+    <a id="constructor-detail" class="anchor" href="#constructor-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructor Detail
+  </h2>
+  
+    <div class="entry-detail" id="new(pull:JSON::PullParser)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(pull : JSON::PullParser)
+
+        <a class="method-permalink" href="#new(pull:JSON::PullParser)-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="new(state_default:State?=nil,history_size:HistorySize?=nil,tick:Tick?=nil,state:State?=nil,history:StateChangeHistory?=nil,paths_allowed:PathsAllowed?=nil)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(state_default : State? = <span class="n">nil</span>, history_size : <a href="../Smcr/HistorySize.html">HistorySize</a>? = <span class="n">nil</span>, tick : <a href="../Smcr/Tick.html">Tick</a>? = <span class="n">nil</span>, state : State? = <span class="n">nil</span>, history : <a href="../Smcr/StateChangeHistory.html">StateChangeHistory</a>? = <span class="n">nil</span>, paths_allowed : <a href="../Smcr/PathsAllowed.html">PathsAllowed</a>? = <span class="n">nil</span>)
+
+        <a class="method-permalink" href="#new(state_default:State?=nil,history_size:HistorySize?=nil,tick:Tick?=nil,state:State?=nil,history:StateChangeHistory?=nil,paths_allowed:PathsAllowed?=nil)-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+
+
+
+  <h2>
+    <a id="class-method-detail" class="anchor" href="#class-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Class Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="state_class-class-method">
+      <div class="signature">
+        
+        def self.<strong>state_class</strong>
+
+        <a class="method-permalink" href="#state_class-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="state_internal_values-class-method">
+      <div class="signature">
+        
+        def self.<strong>state_internal_values</strong>
+
+        <a class="method-permalink" href="#state_internal_values-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="state_names-class-method">
+      <div class="signature">
+        
+        def self.<strong>state_names</strong>
+
+        <a class="method-permalink" href="#state_names-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="state_values-class-method">
+      <div class="signature">
+        
+        def self.<strong>state_values</strong>
+
+        <a class="method-permalink" href="#state_values-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+
+
+
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="add_path(state_from,state_to)-instance-method">
+      <div class="signature">
+        
+        def <strong>add_path</strong>(state_from, state_to)
+
+        <a class="method-permalink" href="#add_path(state_from,state_to)-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="errors:CurrentErrors-instance-method">
+      <div class="signature">
+        
+        def <strong>errors</strong> : <a href="../Smcr/CurrentErrors.html">CurrentErrors</a>
+
+        <a class="method-permalink" href="#errors:CurrentErrors-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="history:StateChangeHistory-instance-method">
+      <div class="signature">
+        
+        def <strong>history</strong> : <a href="../Smcr/StateChangeHistory.html">StateChangeHistory</a>
+
+        <a class="method-permalink" href="#history:StateChangeHistory-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="history_size:HistorySize-instance-method">
+      <div class="signature">
+        
+        def <strong>history_size</strong> : <a href="../Smcr/HistorySize.html">HistorySize</a>
+
+        <a class="method-permalink" href="#history_size:HistorySize-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="initial_default_path-instance-method">
+      <div class="signature">
+        
+        def <strong>initial_default_path</strong>
+
+        <a class="method-permalink" href="#initial_default_path-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="paths_allowed:PathsAllowed-instance-method">
+      <div class="signature">
+        
+        def <strong>paths_allowed</strong> : <a href="../Smcr/PathsAllowed.html">PathsAllowed</a>
+
+        <a class="method-permalink" href="#paths_allowed:PathsAllowed-instance-method">#</a>
+      </div>
+      
+        <div class="doc">
+          
+          <p><span class="flag orange">TODO</span> !</p>
+        </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="paths_allowed?(state_from,state_to)-instance-method">
+      <div class="signature">
+        
+        def <strong>paths_allowed?</strong>(state_from, state_to)
+
+        <a class="method-permalink" href="#paths_allowed?(state_from,state_to)-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="state:State-instance-method">
+      <div class="signature">
+        
+        def <strong>state</strong> : State
+
+        <a class="method-permalink" href="#state:State-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="state_default:State-instance-method">
+      <div class="signature">
+        
+        def <strong>state_default</strong> : State
+
+        <a class="method-permalink" href="#state_default:State-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="tick:Tick-instance-method">
+      <div class="signature">
+        
+        def <strong>tick</strong> : <a href="../Smcr/Tick.html">Tick</a>
+
+        <a class="method-permalink" href="#tick:Tick-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="valid?-instance-method">
+      <div class="signature">
+        
+        def <strong>valid?</strong>
+
+        <a class="method-permalink" href="#valid?-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="validate-instance-method">
+      <div class="signature">
+        
+        def <strong>validate</strong>
+
+        <a class="method-permalink" href="#validate-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+      </div>
+    </div>
+  
+
+
+
+
+</div>
+
+</body>
+</html>
