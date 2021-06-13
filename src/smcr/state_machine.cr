@@ -38,9 +38,10 @@ module Smcr
 
     getter errors : CurrentErrors
 
+    # ameba:disable Metrics/CyclomaticComplexity
     def initialize(
       states_allowed : StatesAllowed? = nil,
-      state_default : StatesAllowed? = nil,
+      state_default : State? = nil,
       history_size : HistorySize? = nil,
       tick : Tick? = nil,
       state : State? = nil,
@@ -67,17 +68,17 @@ module Smcr
       @errors = validate
     end
 
+    # ameba:enable Metrics/CyclomaticComplexity
+
     def validate
       errors = CurrentErrors.new
+
       errors[:states_allowed] = "must be populated with states" if @states_allowed.empty?
       errors[:state_default] = "must be one of state_allowed" unless state_allowed?(state_default)
       errors[:states] = "must be set" if @state == :error_state_unset
       errors[:states] = "must be one of state_allowed" unless state_allowed?(@state)
-      errors[:paths_allowed] = "must be an mapping of state to array of states" unless !@paths_allowed.keys.empty?
-      # errors[:history_size] = "must be positive" if history_size <= 0
+      errors[:paths_allowed] = "must be an mapping of state to array of states" if @paths_allowed.keys.empty?
 
-      # raise MissingStates.new if @states_allowed.empty?
-      # raise HistorySizeMustBePositive.new if history_size <= 0
       errors
     end
 
@@ -87,8 +88,17 @@ module Smcr
 
     ####
 
-    def state_allowed?(a_state)
-      @states_allowed.includes?(a_state)
+    def state_allowed?(state_example)
+      @states_allowed.includes?(state_example)
+    end
+
+    def paths_allowed?(state_from, state_to)
+      @paths_allowed.keys.includes?(state_from) && @paths_allowed[state_from].includes?(state_to)
+    end
+
+    def add_path(state_from, state_to)
+      @paths_allowed[state_from] = StatesAllowed.new unless @paths_allowed.keys.includes?(state_from)
+      @paths_allowed[state_from] << state_to
     end
   end
 end
