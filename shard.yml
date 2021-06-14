@@ -1,5 +1,5 @@
 name: smcr
-version: 0.1.1
+version: 0.1.2
 
 authors:
   - Daniel Huffman <drhuffman12@gmail.com>
@@ -19,3 +19,5 @@ development_dependencies:
   ameba:
     # TODO: Windows Compatibility? See: https://github.com/crystal-ameba/ameba/issues/230
     github: crystal-ameba/ameba
+  coverage:
+    github: anykeyh/crystal-coverage
