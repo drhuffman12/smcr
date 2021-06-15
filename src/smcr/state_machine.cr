@@ -14,7 +14,7 @@ module Smcr
     getter history : Smcr::History
     getter paths_allowed : Smcr::PathsAllowed
 
-    getter errors : CurrentErrors
+    getter errors : Smcr::CurrentErrors
 
     def self.state_class
       State # Needed? Maybe just in case we want to programmatically remind our selves what the 'State' class is?
@@ -58,12 +58,12 @@ module Smcr
       @paths_allowed = paths_allowed ? paths_allowed : Smcr::PathsAllowed.new # initial_default_path
       init_paths
 
-      @errors = CurrentErrors.new
+      @errors = Smcr::CurrentErrors.new
       validate
     end
 
     def validate
-      @errors = CurrentErrors.new
+      @errors = Smcr::CurrentErrors.new
 
       if @paths_allowed.keys.empty? || @paths_allowed.values.map(&.empty?).all?
         @errors[ERROR_KEY_PATHS_ALLOWED] = "must be an mapping of state to array of states"
@@ -89,7 +89,7 @@ module Smcr
     end
 
     def init_paths_from(state_from)
-      @paths_allowed[state_from.value] = StatesAllowed.new
+      @paths_allowed[state_from.value] = Smcr::StatesAllowed.new
     end
 
     def add_path(state_from, state_to)
@@ -120,6 +120,8 @@ module Smcr
                   # Resync was requested
                   attempt_pre.merge(callback_response: resync_state_change(attempt_pre))
                 when (try_tick > (tick + 1))
+                  @errors[ERROR_KEY_RESYNC_NEEDED] = "Resync needed; ticks are off! attempt: #{attempt_pre}"
+
                   # We missed a tick, so need to resync!
                   attempt_pre.merge(callback_response: resync_state_change(attempt_pre))
                 when try_tick < (tick + 1)
@@ -141,8 +143,6 @@ module Smcr
     end
 
     def resync_state_change(attempt_pre)
-      @errors[ERROR_KEY_RESYNC_NEEDED] = "Resync needed; ticks are off! attempt: #{attempt_pre}"
-
       # TODO Sub-class might need to handle resync's differently!
       # e.g.: Do some API call to get current tick/state values and possibly some other data.
 
@@ -153,7 +153,7 @@ module Smcr
         succeeded: false,
         to:        {tick: to_tick, state_value: to_state_value},
         code:      307, # e.g.: maybe mimic HTTP codes,
-        message:   "",
+        message:   "Resyncing!",
       }
     end
 
@@ -170,11 +170,14 @@ module Smcr
       to_tick = state_machine.tick
       to_state_value = state_machine.state.value
 
+      msg = "Ignoring attempted tick and state change " +
+            "(tick: #{attempt_pre[:try][:tick]}, " +
+            "state: #{attempt_pre[:try][:state]})."
       {
         succeeded: false,
         to:        {tick: to_tick, state_value: to_state_value},
         code:      304, # e.g.: maybe mimic HTTP codes,
-        message:   "",
+        message:   msg,
       }
     end
 
@@ -187,7 +190,7 @@ module Smcr
         succeeded: false,
         to:        {tick: to_tick, state_value: to_state_value},
         code:      307, # e.g.: maybe mimic HTTP codes,
-        message:   "",
+        message:   "Ignoring attempted state change (state: #{attempt_pre[:try][:state]}).",
       }
     end
 
@@ -203,9 +206,8 @@ module Smcr
       # from_tick : Smcr::Tick, from_state : State,
       try_tick : Smcr::Tick, try_state : State
     ) : CallbackResponse
-      # Put callbacks in here via monkeypatch or sub-class
-
-      # Must return data with the following keys (hard-code values for now):
+      # Put callbacks in here via monkeypatch or sub-class.
+      # Must return data with the following keys (hard-code values for now, but adjust as applicable):
       {
         succeeded: true,
         to:        {tick: try_tick, state_value: try_state.value},
