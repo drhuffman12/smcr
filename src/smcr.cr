@@ -23,8 +23,8 @@ module Smcr
   #   try: StateAtTick)
   alias CallbackResponse = NamedTuple(
     succeeded: Bool,
-    code: Int32, # e.g.: mimic HTTP codes,
     to: StateAtTick,
+    code: Int32, # e.g.: mimic HTTP codes,
     message: String)
 
   # alias StateChangeAttempt = NamedTuple(
@@ -34,6 +34,7 @@ module Smcr
   #   callback_response: CallbackResponse)
 
   alias StateChangeAttempt = NamedTuple(
+    resync: Bool,
     forced: Bool,
     from: StateAtTick,
     try: StateAtTick,
