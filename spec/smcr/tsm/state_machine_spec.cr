@@ -1,20 +1,11 @@
-require "./../spec_helper"
+require "./../../spec_helper"
 
-# TODO: extract to a separate shard
-
-enum LightColors
-  Off
-  Red
-  Green
-  Blue
-end
-
-class LightStateMachine < Smcr::StateMachine(LightColors)
+class LightTickStateMachine < Smcr::Tsm::StateMachine(LightColors)
 
   # def callbacks_for(
   #   forced : Bool,
-  #   # from_tick : Smcr::Tick, from_state : State,
-  #   try_tick : Smcr::Tick, try_state : State
+  #   # from_tick : Smcr::Tsm::Tick, from_state : State,
+  #   try_tick : Smcr::Tsm::Tick, try_state : State
   # ) : CallbackResponse
   #   # Put callbacks in here via monkeypatch or sub-class
 
@@ -28,7 +19,7 @@ class LightStateMachine < Smcr::StateMachine(LightColors)
   # end
 end
 
-Spectator.describe Smcr::StateMachine do
+Spectator.describe Smcr::Tsm::StateMachine do
   context "example off, red, green, blue" do
     let(state_class_expected) { LightColors }
 
@@ -44,7 +35,7 @@ Spectator.describe Smcr::StateMachine do
     let(paths_allowed) { nil }
 
     let(state_machine) {
-      LightStateMachine.new(
+      LightTickStateMachine.new(
         state_default: state_default,
         history_size: history_size,
         tick: tick,
@@ -58,14 +49,14 @@ Spectator.describe Smcr::StateMachine do
     let(history_size_expected) { history_size }
     let(tick_expected) { tick }
     let(state_expected) { state }
-    let(history_expected) { Smcr::History.new }
+    let(history_expected) { Smcr::Tsm::History.new }
 
     let(paths_allowed_initially_expected) {
       {
-        LightColors::Off.value   => Smcr::StatesAllowed.new,
-        LightColors::Red.value   => Smcr::StatesAllowed.new,
-        LightColors::Green.value => Smcr::StatesAllowed.new,
-        LightColors::Blue.value  => Smcr::StatesAllowed.new,
+        LightColors::Off.value   => Smcr::Tsm::StatesAllowed.new,
+        LightColors::Red.value   => Smcr::Tsm::StatesAllowed.new,
+        LightColors::Green.value => Smcr::Tsm::StatesAllowed.new,
+        LightColors::Blue.value  => Smcr::Tsm::StatesAllowed.new,
       }
     }
 
@@ -91,7 +82,7 @@ Spectator.describe Smcr::StateMachine do
 
     describe "to/from/to json" do
       let(to_json) { state_machine.to_json }
-      let(from_json) { LightStateMachine.from_json(to_json) }
+      let(from_json) { LightTickStateMachine.from_json(to_json) }
       let(to_json2) { from_json.to_json }
 
       # For now, just a simple check to make sure to/from JSON doesn't error!
@@ -257,7 +248,7 @@ Spectator.describe Smcr::StateMachine do
       }
       let(paths_allowed_updated_expected_2) {
         paths_allowed_initially_expected.clone.tap { |paths|
-          paths[state_from.value] = Smcr::StatesAllowed.new
+          paths[state_from.value] = Smcr::Tsm::StatesAllowed.new
         }
       }
       context "when connecting from 'Off' to 'Red' followed by removing that connection" do
