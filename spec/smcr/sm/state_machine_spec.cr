@@ -48,7 +48,7 @@ Spectator.describe Smcr::Sm::StateMachine do
     let(state_default_expected) { state_default }
     let(history_size_expected) { history_size }
     let(state_expected) { state }
-    let(history_expected) { Smcr::Sm::History.new }
+    let(history_expected) { Smcr::Abstract::History.new }
 
     let(paths_allowed_initially_expected) {
       {

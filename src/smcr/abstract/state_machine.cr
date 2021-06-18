@@ -13,7 +13,7 @@ module Smcr
       getter state_default : State
       getter history_size : Abstract::HistorySize
       getter state : State
-      getter history # : Smcr::Sm::History
+      getter history # : Smcr::Abstract::History
       getter paths_allowed : Abstract::PathsAllowed
 
       getter errors : Abstract::CurrentErrors
@@ -46,7 +46,7 @@ module Smcr
         state_default : State? = nil,
         history_size : Smcr::Abstract::HistorySize? = nil,
         state : State? = nil,
-        # history = nil, #  : Smcr::Sm::History?
+        # history = nil, #  : Smcr::Abstract::History?
         paths_allowed : Smcr::Abstract::PathsAllowed? = nil
       )
         @history_size = history_size ? history_size : Abstract::HistorySize.new(10)
@@ -64,7 +64,7 @@ module Smcr
 
       def init_history
         # Adjust in sub-class!
-        # Smcr::Sm::History.new
+        # Smcr::Abstract::History.new
       end
 
       def replace_history(prior_history)
@@ -118,7 +118,6 @@ module Smcr
         @paths_allowed[state_from.value].delete(state_to.value) if @paths_allowed[state_from.value].includes?(state_to.value)
       end
 
-      # abstract def attempt_state_change
       # # # ATTEMPT STATE CHANGE
       # def attempt_state_change(try_state : State, resync : Bool = false, forced : Bool = false)
       #   attempt_pre = {
@@ -128,7 +127,7 @@ module Smcr
       #     try_state_value:  try_state.value,
       #   }
 
-      #   attempt = case
+      #   attempt_details = case
       #             when resync
       #               # Resync was requested
       #               attempt_pre.merge(callback_response: resync_state_change(attempt_pre))
@@ -140,9 +139,9 @@ module Smcr
       #               attempt_pre.merge(callback_response: ignore_attempted_state_change(attempt_pre))
       #             end
 
-      #   state_value = attempt[:callback_response][:to][:state_value]
+      #   state_value = attempt_details[:callback_response][:to][:state_value]
       #   @state = State.from_value(state_value)
-      #   append_history(attempt)
+      #   append_history(attempt_details)
       # end
 
       # abstract def resync_state_change
@@ -181,27 +180,47 @@ module Smcr
       #   }
       # end
 
-      def append_history(attempt)
-        @history << attempt
+      abstract def attempt_state_change(
+        # forced : Bool,
+        # from,
+        attempting : Abstract::AttemptSummary,
+        resync : Bool = false,
+        forced : Bool = false
+      ) : StateChangeAttempt
+
+      def append_history(attempt_details)
+        @history << attempt_details
         @history = @history[-@history_size..-1] if @history.size > @history_size
       end
 
+      def follow_attempted_state_change(attempt_pre)
+        callbacks_for(
+          forced: attempt_pre[:forced],
+          from: attempt_pre[:from],
+          attempting: attempt_pre[:attempting]
+        )
+      end
+
+      abstract def resync_state_change(attempt_pre) : CallbackResponse
+
+      abstract def ignore_attempted_state_change(attempt_pre) : CallbackResponse
+
       # # Modify these methods in sub-classes:
-      # abstract def callbacks_for
-      # def callbacks_for(
-      #   forced : Bool,
-      #   from_state : State,
-      #   try_state : State
-      # ) : CallbackResponse
-      #   # Put callbacks in here via monkeypatch or sub-class.
-      #   # Must return data with the following keys (hard-code values for now, but adjust as applicable):
-      #   {
-      #     succeeded: true,
-      #     to_state_value: try_state.value,
-      #     code:      200, # e.g.: maybe mimic HTTP codes,
-      #     message:   "",
-      #   }
-      # end
+
+      def callbacks_for(
+        forced : Bool,
+        from : Abstract::AttemptSummary,
+        attempting : Abstract::AttemptSummary
+      ) : Abstract::CallbackResponse
+        # Put callbacks in here via monkeypatch or sub-class.
+        # Must return data with the following keys (hard-code values for now, but adjust as applicable):
+        {
+          succeeded: true,
+          to:        attempting,
+          code:      200, # e.g.: maybe mimic HTTP codes,
+          message:   "",
+        }
+      end
     end
   end
 end

@@ -8,10 +8,30 @@ module Smcr
     alias StatesAllowed = Array(StateValue)
     alias PathsAllowed = Hash(StateValue, StatesAllowed)
 
+    # NOTE: Not Hash(Symbol, Int32), because we're trying to stay compatible with JSON-serialization.
+    alias AttemptSummary = Hash(String, Int32)
+
     alias CallbackResponse = NamedTuple(
       succeeded: Bool,
-      code: Int32, # e.g.: mimic HTTP codes,
+      to: AttemptSummary, # State,
+      code: Int32,        # e.g.: mimic HTTP codes,
       message: String)
+
+    alias StateChangeAttempt = NamedTuple(
+      resync: Bool,
+      forced: Bool,
+      # from_state_value: Smcr::Abstract::StateValue,
+      # try_state_value: Smcr::Abstract::StateValue,
+      from: AttemptSummary,       # State,
+      attempting: AttemptSummary, # State,
+      callback_response: Smcr::Abstract::CallbackResponse)
+
+    alias History = Array(StateChangeAttempt)
+
+    # alias CallbackResponse = NamedTuple(
+    #   succeeded: Bool,
+    #   code: Int32, # e.g.: mimic HTTP codes,
+    #   message: String)
 
     # alias StateChangeAttempt = NamedTuple(
     #   resync: Bool,

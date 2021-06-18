@@ -49,7 +49,7 @@ Spectator.describe Smcr::Tsm::StateMachine do
     let(history_size_expected) { history_size }
     let(tick_expected) { tick }
     let(state_expected) { state }
-    let(history_expected) { Smcr::Tsm::History.new }
+    let(history_expected) { Smcr::Abstract::History.new }
 
     let(paths_allowed_initially_expected) {
       {
@@ -283,7 +283,7 @@ Spectator.describe Smcr::Tsm::StateMachine do
     #     let(forced) { false }
     #     # let(tick_before) { state_machine.tick.clone }
     #     # let(state_before) { state_machine.state.clone }
-    #     # let(attempt) {
+    #     # let(attempt_details) {
     #     #   state_machine.attempt_state_change(
     #     #     forced: forced,
     #     #     try_tick: try_tick, try_state: try_state
@@ -368,7 +368,7 @@ Spectator.describe Smcr::Tsm::StateMachine do
     #         end
     #       end
 
-    #       it "appends the 'attempt' to '@history'" do
+    #       it "appends the 'attempt_details' to '@history'" do
     #         history_before = state_machine.history.clone
 
     #         puts
@@ -395,7 +395,7 @@ Spectator.describe Smcr::Tsm::StateMachine do
     #         expect(state_machine.history.last).to eq(response)
     #       end
 
-    #       it "returns attempt entry expected" do
+    #       it "returns attempt_details entry expected" do
     #         response = state_machine.attempt_state_change(
     #           forced: forced,
     #           try_tick: try_tick, try_state: try_state
@@ -471,7 +471,7 @@ Spectator.describe Smcr::Tsm::StateMachine do
     #         end
     #       end
 
-    #       it "appends the 'attempt' to '@history'" do
+    #       it "appends the 'attempt_details' to '@history'" do
     #         history_before = state_machine.history.clone
 
     #         puts
@@ -498,7 +498,7 @@ Spectator.describe Smcr::Tsm::StateMachine do
     #         expect(state_machine.history.last).to eq(response)
     #       end
 
-    #       it "returns attempt entry expected" do
+    #       it "returns attempt_details entry expected" do
     #         response = state_machine.attempt_state_change(
     #           forced: forced,
     #           try_tick: try_tick, try_state: try_state
@@ -508,7 +508,7 @@ Spectator.describe Smcr::Tsm::StateMachine do
 
     #       # let(tick_before) { state_machine.tick.clone }
     #       # let(state_before) { state_machine.state.clone }
-    #     #   let(attempt) {
+    #     #   let(attempt_details) {
     #     #     state_machine.attempt_state_change(
     #     #       forced: forced,
     #     #       try_tick: try_tick, try_state: try_state
@@ -531,18 +531,18 @@ Spectator.describe Smcr::Tsm::StateMachine do
     #     #     ).and_return(callback_response_expected)
     #     #   end
 
-    #     #   context "returns the attempt in which the attemp has expected values for key" do
+    #     #   context "returns the attempt_details in which the attemp has expected values for key" do
     #     #     it "forced" do
-    #     #       expect(attempt[:forced]).to eq(false)
+    #     #       expect(attempt_details[:forced]).to eq(false)
     #     #     end
     #     #     it "from" do
-    #     #       expect(attempt[:from]).to eq({tick: tick_before, state_before: state.value})
+    #     #       expect(attempt_details[:from]).to eq({tick: tick_before, state_before: state.value})
     #     #     end
     #     #     it "try" do
-    #     #       expect(attempt[:try]).to eq({tick: try_tick, state_before: try_state.value})
+    #     #       expect(attempt_details[:try]).to eq({tick: try_tick, state_before: try_state.value})
     #     #     end
     #     #     it "callback_response" do
-    #     #       expect(attempt[:callback_response]).to eq(callback_response_expected)
+    #     #       expect(attempt_details[:callback_response]).to eq(callback_response_expected)
     #     #     end
     #     #   end
     #     end

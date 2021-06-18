@@ -14,7 +14,7 @@ module Smcr
       # getter state_default : State
       # getter history_size : Abstract::HistorySize
       # getter state : State
-      getter history : Smcr::Sm::History
+      getter history : Smcr::Abstract::History
 
       # getter paths_allowed : Abstract::PathsAllowed
 
@@ -48,7 +48,7 @@ module Smcr
       #   state_default : State? = nil,
       #   history_size : Abstract::HistorySize? = nil,
       #   state : State? = nil,
-      #   history : Smcr::Sm::History? = nil,
+      #   history : Smcr::Abstract::History? = nil,
       #   paths_allowed : Abstract::PathsAllowed? = nil
       # )
       #   @history_size = history_size ? history_size : Abstract::HistorySize.new(10)
@@ -56,7 +56,7 @@ module Smcr
       #   @state_default = state_default ? state_default : State.values.first
       #   @state = state ? state : @state_default
 
-      #   @history = history ? history : Smcr::Sm::History.new
+      #   @history = history ? history : Smcr::Abstract::History.new
       #   @paths_allowed = paths_allowed ? paths_allowed : Abstract::PathsAllowed.new # initial_default_path
       #   init_paths
 
@@ -65,7 +65,7 @@ module Smcr
       # end
 
       def init_history
-        Smcr::Sm::History.new
+        Smcr::Abstract::History.new
       end
 
       # def validate
@@ -118,86 +118,112 @@ module Smcr
       # end
 
       # # ATTEMPT STATE CHANGE
-      def attempt_state_change(try_state : State, resync : Bool = false, forced : Bool = false)
+      def attempt_state_change(
+        # try_state : State,
+        attempting : Abstract::AttemptSummary, # State,
+        resync : Bool = false,
+        forced : Bool = false
+      ) : Abstract::StateChangeAttempt
         attempt_pre = {
-          resync:           resync,
-          forced:           forced,
-          from_state_value: state.value,
-          try_state_value:  try_state.value,
+          resync: resync,
+          forced: forced,
+          # from_state_value: state.value,
+          # try_state_value:  try_state.value,
+          from: {
+            "state_internal_value" => state_machine.state.value.value,
+          },
+          attempting: {
+            "state_internal_value" => attempting["state_internal_value"],
+          },
           # callback_response: response,
         }
 
-        attempt = case
-                  when resync
-                    # Resync was requested
-                    attempt_pre.merge(callback_response: resync_state_change(attempt_pre))
-                  when forced || paths_allowed[state].includes?(try_state)
-                    # Forced state change requested OR state change is allowed.
-                    attempt_pre.merge(callback_response: follow_attempted_state_change(attempt_pre))
-                  else
-                    # No resync nor forced requested and state requested is not allowed.
-                    attempt_pre.merge(callback_response: ignore_attempted_state_change(attempt_pre))
-                  end
+        attempt_details = case
+                          when resync
+                            # Resync was requested
+                            attempt_pre.merge(callback_response: resync_state_change(attempt_pre))
+                          when forced || paths_allowed[state].includes?(try_state)
+                            # Forced state change requested OR state change is allowed.
+                            attempt_pre.merge(callback_response: follow_attempted_state_change(attempt_pre))
+                          else
+                            # No resync nor forced requested and state requested is not allowed.
+                            attempt_pre.merge(callback_response: ignore_attempted_state_change(attempt_pre))
+                          end
 
-        state_value = attempt[:callback_response][:to][:state_value]
-        @state = State.from_value(state_value)
-        append_history(attempt)
+        # state_internal_value = attempt_details[:callback_response][:to][:state_value]
+        state_internal_value = attempt_details[:callback_response][:to]["state_internal_value"]
+        @state = State.from_value(state_internal_value)
+        append_history(attempt_details)
+
+        attempt_details
       end
 
-      def resync_state_change(attempt_pre)
+      def resync_state_change(attempt_pre) : Abstract::CallbackResponse
         # TODO Sub-class might need to handle resync's differently!
         # e.g.: Do some API call to get current state values and possibly some other data.
 
-        # For now, we'll ignore the attempted state:
-        to_state_value = state_machine.state.value
+        actual_to = {
+          "state_internal_value" => state_machine.state.value.value,
+        }
+
+        msg = "Resyncing!"
         {
-          succeeded:      false,
-          to_state_value: to_state_value,
-          code:           307, # e.g.: maybe mimic HTTP codes,
-          message:        "Resyncing!",
+          succeeded: false,
+          to:        actual_to,
+          code:      307, # e.g.: maybe mimic HTTP codes,
+          message:   msg,
         }
       end
 
-      def follow_attempted_state_change(attempt_pre)
-        callbacks_for(
-          forced: attempt_pre[:forced],
-          try_state: attempt_pre[:try][:state]
-        )
-      end
+      # def follow_attempted_state_change(attempt_pre)
+      #   callbacks_for(
+      #     forced: attempt_pre[:forced],
+      #     from: attempt_pre[:from],
+      #     attempting: attempt_pre[:attempting]
+      #   )
+      # end
 
-      def ignore_attempted_state_change(attempt_pre)
+      def ignore_attempted_state_change(attempt_pre) : Abstract::CallbackResponse
         # e.g.: Player A and Player B both try to move to tile X, but only one can at a time, so one request gets ignored.
-        to_state_value = state_machine.state.value
+        to_state_internal_value = state_machine.state.value.value
+
+        actual_to = {
+          "state_internal_value" => to_state_internal_value,
+        }
+
+        msg = "Ignoring attempted tick and state change: #{attempt_pre}; instead going to: #{actual_to}"
 
         {
-          succeeded:      false,
-          to_state_value: to_state_value.value,
-          code:           307, # e.g.: maybe mimic HTTP codes,
-          message:        "Ignoring attempted state change (state: #{attempt_pre[:try][:state]}).",
+          succeeded: false,
+          to:        actual_to,
+          code:      304, # e.g.: maybe mimic HTTP codes,
+          message:   msg,
         }
       end
 
-      # def append_history(attempt)
-      #   @history << attempt
+      # def append_history(attempt_details)
+      #   @history << attempt_details
       #   @history = @history[-@history_size..-1] if @history.size > @history_size
       # end
 
       # # Modify these methods in sub-classes:
 
-      def callbacks_for(
-        forced : Bool,
-        from_state : State,
-        try_state : State
-      ) : CallbackResponse
-        # Put callbacks in here via monkeypatch or sub-class.
-        # Must return data with the following keys (hard-code values for now, but adjust as applicable):
-        {
-          succeeded:      true,
-          to_state_value: try_state.value,
-          code:           200, # e.g.: maybe mimic HTTP codes,
-          message:        "",
-        }
-      end
+      # def callbacks_for(
+      #   forced : Bool,
+      #   # from_state : State,
+      #   # try_state : State
+      #   from : AttemptSummary, # Smcr::Abstract::State,
+      #   attempting : AttemptSummary # Smcr::Abstract::State
+      # ) : CallbackResponse
+      #   # Put callbacks in here via monkeypatch or sub-class.
+      #   # Must return data with the following keys (hard-code values for now, but adjust as applicable):
+      #   {
+      #     succeeded:      true,
+      #     to: attempting,
+      #     code:           200, # e.g.: maybe mimic HTTP codes,
+      #     message:        "",
+      #   }
+      # end
     end
   end
 end
