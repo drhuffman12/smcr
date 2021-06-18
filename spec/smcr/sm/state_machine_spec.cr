@@ -148,7 +148,6 @@ Spectator.describe Smcr::Sm::StateMachine do
 
         pending "calls 'validate'" do
           expect_any_instance_of(LightStateMachine).to receive(:validate)
-          sm = 
           LightStateMachine.new(
             state_default: state_default,
             history_size: history_size,
@@ -176,13 +175,13 @@ Spectator.describe Smcr::Sm::StateMachine do
         expect(state_machine.errors).to eq(errors_expected)
       end
     end
-    
+
     describe "#valid?" do
       context "when 'errors' has keys" do
         it "returns true" do
           expect(state_machine.errors.keys).not_to be_empty
           expect(state_machine.valid?).to be_false
-        end        
+        end
       end
       context "when 'errors' has NO keys (because a path was added)" do
         it "returns true" do
@@ -192,7 +191,7 @@ Spectator.describe Smcr::Sm::StateMachine do
           state_machine.validate
           expect(state_machine.errors.keys).to be_empty
           expect(state_machine.valid?).to be_true
-        end        
+        end
       end
     end
 
@@ -203,8 +202,8 @@ Spectator.describe Smcr::Sm::StateMachine do
             state_values_expected.each do |state_to|
               expect(state_machine.paths_allowed?(state_machine.state, state_to)).to be_false
             end
-          end        
-        end        
+          end
+        end
       end
       context "after paths added" do
         let(state_to_red) { LightColors::Red }
@@ -225,8 +224,8 @@ Spectator.describe Smcr::Sm::StateMachine do
             expect(state_machine.paths_allowed?(state_machine.state, LightColors::Red)).to be_true
             expect(state_machine.paths_allowed?(state_machine.state, LightColors::Green)).to be_false
             expect(state_machine.paths_allowed?(state_machine.state, LightColors::Blue)).to be_false
-          end        
-        end        
+          end
+        end
       end
     end
 
@@ -251,13 +250,13 @@ Spectator.describe Smcr::Sm::StateMachine do
       context "when paths were previously set" do
         it "re-initializes the allowed paths" do
           state_machine.reset_paths
-  
+
           puts
           puts "AFTER"
           p! state_machine.paths_allowed
           p! state_machine.state
           puts
-  
+
           expect(state_machine.paths_allowed.keys.size).to eq(4)
           expect(state_machine.paths_allowed.values.flatten.size).to eq(0)
         end
