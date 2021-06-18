@@ -29,7 +29,7 @@ Spectator.describe Smcr::Tsm::StateMachine do
 
     let(state_default) { LightColors::Off }
     let(history_size) { 2.to_u8 }
-    let(tick) { 3 }
+    let(tick) { 0 }
     let(state) { LightColors::Blue }
     let(history) { nil }
     let(paths_allowed) { nil }
@@ -38,9 +38,9 @@ Spectator.describe Smcr::Tsm::StateMachine do
       LightTickStateMachine.new(
         state_default: state_default,
         history_size: history_size,
-        tick: tick,
+        # tick: tick,
         state: state,
-        history: history,
+        # history: history,
         paths_allowed: paths_allowed
       )
     }
@@ -53,10 +53,10 @@ Spectator.describe Smcr::Tsm::StateMachine do
 
     let(paths_allowed_initially_expected) {
       {
-        LightColors::Off.value   => Smcr::Tsm::StatesAllowed.new,
-        LightColors::Red.value   => Smcr::Tsm::StatesAllowed.new,
-        LightColors::Green.value => Smcr::Tsm::StatesAllowed.new,
-        LightColors::Blue.value  => Smcr::Tsm::StatesAllowed.new,
+        LightColors::Off.value   => Smcr::Abstract::StatesAllowed.new,
+        LightColors::Red.value   => Smcr::Abstract::StatesAllowed.new,
+        LightColors::Green.value => Smcr::Abstract::StatesAllowed.new,
+        LightColors::Blue.value  => Smcr::Abstract::StatesAllowed.new,
       }
     }
 
@@ -248,7 +248,7 @@ Spectator.describe Smcr::Tsm::StateMachine do
       }
       let(paths_allowed_updated_expected_2) {
         paths_allowed_initially_expected.clone.tap { |paths|
-          paths[state_from.value] = Smcr::Tsm::StatesAllowed.new
+          paths[state_from.value] = Smcr::Abstract::StatesAllowed.new
         }
       }
       context "when connecting from 'Off' to 'Red' followed by removing that connection" do

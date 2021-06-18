@@ -1,45 +1,28 @@
 
 module Smcr
   module Sm
-    alias StateValue = Int32 # aka internal representation of an Enum's value
+    # alias Abstract::StateValue = Int32 # aka internal representation of an Enum's value
 
-    alias Tick = Int32        # Bigger?
-    alias HistorySize = UInt8 # Bigger?
+    # alias HistorySize = UInt8 # Bigger?
     # alias History = Array(StateChanges)
   
-    alias StatesAllowed = Array(StateValue)
-    alias PathsAllowed = Hash(StateValue, StatesAllowed)
+    # alias StatesAllowed = Array(Abstract::StateValue)
+    # alias PathsAllowed = Hash(Abstract::StateValue, StatesAllowed)
   
-    alias StateAtTick = NamedTuple(tick: Tick, state_value: StateValue)
-  
-    # alias StateChangedAttempt = NamedTuple(
-    #   forced: Bool,
-    #   from: StateAtTick,
-    #   try: StateAtTick)
-    alias CallbackResponse = NamedTuple(
-      succeeded: Bool,
-      to: StateAtTick,
-      code: Int32, # e.g.: mimic HTTP codes,
-      message: String)
-  
-    # alias StateChangeAttempt = NamedTuple(
-    #   # state_value_became: StateValue,
-    #   # tick_became: Tick,
-    #   state_change_attempted: StateChangedAttempt,
-    #   callback_response: CallbackResponse)
+    # alias Abstract::CallbackResponse = NamedTuple(
+    #   succeeded: Bool,
+    #   code: Int32, # e.g.: mimic HTTP codes,
+    #   message: String)
   
     alias StateChangeAttempt = NamedTuple(
       resync: Bool,
       forced: Bool,
-      from: StateAtTick,
-      try: StateAtTick,
-      # state_value_became: StateValue,
-      # tick_became: Tick,
-      # state_change_attempted: StateChangedAttempt,
-      callback_response: CallbackResponse)
+      from_state_value: Abstract::StateValue,
+      try_state_value: Abstract::StateValue,
+      callback_response: Abstract::CallbackResponse)
   
     alias History = Array(StateChangeAttempt)
   
-    alias CurrentErrors = Hash(String, String)
+    # alias CurrentErrors = Hash(String, String)
   end
 end

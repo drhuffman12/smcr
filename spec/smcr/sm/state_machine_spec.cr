@@ -40,7 +40,7 @@ Spectator.describe Smcr::Sm::StateMachine do
         state_default: state_default,
         history_size: history_size,
         state: state,
-        history: history,
+        # history: history,
         paths_allowed: paths_allowed
       )
     }
@@ -52,10 +52,10 @@ Spectator.describe Smcr::Sm::StateMachine do
 
     let(paths_allowed_initially_expected) {
       {
-        LightColors::Off.value   => Smcr::Sm::StatesAllowed.new,
-        LightColors::Red.value   => Smcr::Sm::StatesAllowed.new,
-        LightColors::Green.value => Smcr::Sm::StatesAllowed.new,
-        LightColors::Blue.value  => Smcr::Sm::StatesAllowed.new,
+        LightColors::Off.value   => Smcr::Abstract::StatesAllowed.new,
+        LightColors::Red.value   => Smcr::Abstract::StatesAllowed.new,
+        LightColors::Green.value => Smcr::Abstract::StatesAllowed.new,
+        LightColors::Blue.value  => Smcr::Abstract::StatesAllowed.new,
       }
     }
 
@@ -153,7 +153,7 @@ Spectator.describe Smcr::Sm::StateMachine do
             state_default: state_default,
             history_size: history_size,
             state: state,
-            history: history,
+            # history: history,
             paths_allowed: paths_allowed
           )
         end
@@ -356,7 +356,7 @@ Spectator.describe Smcr::Sm::StateMachine do
       }
       let(paths_allowed_updated_expected_2) {
         paths_allowed_initially_expected.clone.tap { |paths|
-          paths[state_from.value] = Smcr::Sm::StatesAllowed.new
+          paths[state_from.value] = Smcr::Abstract::StatesAllowed.new
         }
       }
       context "when connecting from 'Off' to 'Red' followed by removing that connection" do

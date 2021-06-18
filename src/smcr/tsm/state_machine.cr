@@ -1,113 +1,133 @@
+
+require "./../abstract/state_machine.cr"
 require "./aliases.cr"
 
 module Smcr
   module Tsm
     # Simple Tick-State Machine
-    class StateMachine(State)
-      include JSON::Serializable
-      # include PropsAndInits(State)
+    class StateMachine(State) < Abstract::StateMachine(State)
+      # include JSON::Serializable
 
-      ERROR_KEY_PATHS_ALLOWED       = "paths_allowed"
-      ERROR_KEY_RESYNC_NEEDED       = "error_key_resync_needed"
-      ERROR_KEY_STATE_CHANGE_FAILED = "history"
+      # ERROR_KEY_PATHS_ALLOWED       = "paths_allowed"
+      # ERROR_KEY_RESYNC_NEEDED       = "error_key_resync_needed"
+      # ERROR_KEY_STATE_CHANGE_FAILED = "history"
   
-      getter state_default : State
-      getter history_size : Smcr::Tsm::HistorySize
+      # getter state_default : State
+      # getter history_size : Abstract::HistorySize
       getter tick : Smcr::Tsm::Tick
-      getter state : State
+      # getter state : State
       getter history : Smcr::Tsm::History
-      getter paths_allowed : Smcr::Tsm::PathsAllowed
+      # getter paths_allowed : Abstract::PathsAllowed
   
-      getter errors : Smcr::Tsm::CurrentErrors
+      # getter errors : Abstract::CurrentErrors
   
-      def self.state_class
-        State # Needed? Maybe just in case we want to programmatically remind our selves what the 'State' class is?
-      end
+      # def self.state_class
+      #   State # Needed? Maybe just in case we want to programmatically remind our selves what the 'State' class is?
+      # end
   
-      def self.state_names
-        State.names # Needed?
-      end
+      # def self.state_names
+      #   State.names # Needed?
+      # end
   
-      def self.state_values
-        State.values # Needed?
-      end
+      # def self.state_values
+      #   State.values # Needed?
+      # end
   
-      def other_state_values
-        StateMachine(State).state_values - [state] # Needed?
-      end
+      # def other_state_values
+      #   StateMachine(State).state_values - [state] # Needed?
+      # end
   
-      def self.state_internal_values
-        State.values.map(&.value) # Needed?
-      end
+      # def self.state_internal_values
+      #   State.values.map(&.value) # Needed?
+      # end
   
-      def other_state_internal_values
-        StateMachine(State).state_internal_values - [state.value] # Needed?
-      end
+      # def other_state_internal_values
+      #   StateMachine(State).state_internal_values - [state.value] # Needed?
+      # end
   
       def initialize(
         state_default : State? = nil,
-        history_size : Smcr::Tsm::HistorySize? = nil,
-        tick : Smcr::Tsm::Tick? = nil,
+        history_size : Smcr::Abstract::HistorySize? = nil,
         state : State? = nil,
-        history : Smcr::Tsm::History? = nil,
-        paths_allowed : Smcr::Tsm::PathsAllowed? = nil
+        # history = nil, #  : Smcr::Sm::History?
+        paths_allowed : Smcr::Abstract::PathsAllowed? = nil
       )
-        @history_size = history_size ? history_size : Smcr::Tsm::HistorySize.new(10)
-        @tick = tick ? tick : Smcr::Tsm::Tick.new(0)
+        super
+        @tick = Smcr::Tsm::Tick.new(0)  
+      end
+
+      def replace_tick(prior_tick)
+        @tick = prior_tick
+      end
+
+      # def initialize(
+      #   state_default : State? = nil,
+      #   history_size : Abstract::HistorySize? = nil,
+      #   tick : Smcr::Tsm::Tick? = nil,
+      #   state : State? = nil,
+      #   history : Smcr::Tsm::History? = nil,
+      #   paths_allowed : Abstract::PathsAllowed? = nil
+      # )
+      #   @history_size = history_size ? history_size : Abstract::HistorySize.new(10)
+      #   @tick = tick ? tick : Smcr::Tsm::Tick.new(0)
   
-        @state_default = state_default ? state_default : State.values.first
-        @state = state ? state : @state_default
+      #   @state_default = state_default ? state_default : State.values.first
+      #   @state = state ? state : @state_default
   
-        @history = history ? history : Smcr::Tsm::History.new
-        @paths_allowed = paths_allowed ? paths_allowed : Smcr::Tsm::PathsAllowed.new # initial_default_path
-        init_paths
+      #   @history = history ? history : Smcr::Tsm::History.new
+      #   @paths_allowed = paths_allowed ? paths_allowed : Abstract::PathsAllowed.new # initial_default_path
+      #   init_paths
   
-        @errors = Smcr::Tsm::CurrentErrors.new
-        validate
+      #   @errors = Abstract::CurrentErrors.new
+      #   validate
+      # end
+  
+      def init_history
+        Smcr::Tsm::History.new
       end
   
-      def validate
-        @errors = Smcr::Tsm::CurrentErrors.new
+      # def validate
+      #   @errors = Abstract::CurrentErrors.new
   
-        if @paths_allowed.keys.empty? || @paths_allowed.values.map(&.empty?).all?
-          @errors[ERROR_KEY_PATHS_ALLOWED] = "must be an mapping of state to array of states"
-        end
+      #   if @paths_allowed.keys.empty? || @paths_allowed.values.map(&.empty?).all?
+      #     @errors[ERROR_KEY_PATHS_ALLOWED] = "must be an mapping of state to array of states"
+      #   end
   
-        @errors
-      end
+      #   @errors
+      # end
   
-      def valid?
-        @errors.empty?
-      end
+      # def valid?
+      #   @errors.empty?
+      # end
   
       # # PATHS
   
-      def paths_allowed?(state_from, state_to)
-        @paths_allowed.keys.includes?(state_from) && @paths_allowed[state_from].includes?(state_to)
-      end
+      # def paths_allowed?(state_from, state_to)
+      #   @paths_allowed.keys.includes?(state_from) && @paths_allowed[state_from].includes?(state_to)
+      # end
   
-      def init_paths
-        self.class.state_values.each do |state_from|
-          init_paths_from(state_from)
-        end
-      end
+      # def init_paths
+      #   self.class.state_values.each do |state_from|
+      #     init_paths_from(state_from)
+      #   end
+      # end
   
-      def init_paths_from(state_from)
-        @paths_allowed[state_from.value] = Smcr::Tsm::StatesAllowed.new
-      end
+      # def init_paths_from(state_from)
+      #   @paths_allowed[state_from.value] = Abstract::StatesAllowed.new
+      # end
   
-      def add_path(state_from, state_to)
-        init_paths_from(state_from) unless @paths_allowed.keys.includes?(state_from.value)
+      # def add_path(state_from, state_to)
+      #   init_paths_from(state_from) unless @paths_allowed.keys.includes?(state_from.value)
   
-        # You can effectively re-order 'state_to' values by re-add a 'state_to' value (which gets moved to the end).
-        remove_path(state_from, state_to)
+      #   # You can effectively re-order 'state_to' values by re-add a 'state_to' value (which gets moved to the end).
+      #   remove_path(state_from, state_to)
   
-        @paths_allowed[state_from.value] << state_to.value
-      end
+      #   @paths_allowed[state_from.value] << state_to.value
+      # end
   
-      def remove_path(state_from, state_to)
-        @paths_allowed[state_from.value].delete(state_to.value) if @paths_allowed[state_from.value].includes?(state_to.value)
-      end
+      # def remove_path(state_from, state_to)
+      #   @paths_allowed[state_from.value].delete(state_to.value) if @paths_allowed[state_from.value].includes?(state_to.value)
+      # end
   
       # # ATTEMPT STATE CHANGE
       def attempt_state_change(try_state : State, try_tick : Smcr::Tsm::Tick = tick + 1, resync : Bool = false, forced : Bool = false)
@@ -198,10 +218,10 @@ module Smcr
         }
       end
   
-      def append_history(attempt)
-        @history << attempt
-        @history = @history[-@history_size..-1] if @history.size > @history_size
-      end
+      # def append_history(attempt)
+      #   @history << attempt
+      #   @history = @history[-@history_size..-1] if @history.size > @history_size
+      # end
   
       # # Modify these methods in sub-classes:
   
