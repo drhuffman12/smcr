@@ -7,7 +7,7 @@ module Smcr
     class StateMachine(State) < Abstract::StateMachine(State)
       # include JSON::Serializable
 
-      # ERROR_KEY_PATHS_ALLOWED       = "paths_allowed"
+      # ERROR_PATHS_ALLOWED_MISSING       = "paths_allowed_missing"
       # ERROR_KEY_RESYNC_NEEDED       = "error_key_resync_needed"
       # ERROR_KEY_STATE_CHANGE_FAILED = "history"
 
@@ -72,7 +72,7 @@ module Smcr
       #   @errors.clear
 
       #   if @paths_allowed.keys.empty? || @paths_allowed.values.map(&.empty?).all?
-      #     @errors[ERROR_KEY_PATHS_ALLOWED] = "must be an mapping of state to array of states"
+      #     @errors[ERROR_PATHS_ALLOWED_MISSING] = "must be an mapping of state to array of states"
       #   end
 
       #   @errors

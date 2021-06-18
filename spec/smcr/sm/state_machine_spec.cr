@@ -28,6 +28,9 @@ Spectator.describe Smcr::Sm::StateMachine do
     let(state_values_expected) { [LightColors::Off, LightColors::Red, LightColors::Green, LightColors::Blue] }
     let(state_other_values_expected) { [LightColors::Off, LightColors::Red, LightColors::Green] }
     let(state_internal_values_expected) { [0, 1, 2, 3] }
+    let(state_names_to_internal_values_expected) {
+      {"Off" => 0, "Red" => 1, "Green" => 2, "Blue" => 3}
+    }
 
     let(state_default) { LightColors::Off }
     let(history_size) { 2.to_u8 }
@@ -60,7 +63,7 @@ Spectator.describe Smcr::Sm::StateMachine do
     }
 
     let(errors_expected) {
-      {"paths_allowed" => "must be an mapping of state to array of states"}
+      {"paths_allowed_missing" => "must be an mapping of state to array of states"}
     }
 
     describe ".state_class" do
@@ -96,15 +99,36 @@ Spectator.describe Smcr::Sm::StateMachine do
       end
     end
 
+    describe ".state_names_to_internal_values" do
+      it "returns the expected mapping of state names to internal values" do
+        expect(state_machine.class.state_names_to_internal_values).to eq(state_names_to_internal_values_expected)
+      end
+    end
+
     describe "to/from/to json" do
-      let(to_json) { state_machine.to_json }
-      let(from_json) { LightStateMachine.from_json(to_json) }
-      let(to_json2) { from_json.to_json }
+      let(to_json) { state_machine.validate; state_machine.to_json }
 
       # For now, just a simple check to make sure to/from JSON doesn't error!
       # We probably should check various keys and values individually.
-      it "JSON values match" do
-        expect(to_json).to eq(to_json2)
+      context "when NO allowed_paths defined (as is the case with the basic state machines defined)" do
+        it "it raises" do
+          expect {
+            LightStateMachine.from_json(to_json)
+          }.to raise_error(Smcr::Abstract::InvalidStateMachine)
+        end
+      end
+
+      context "when some allowed_paths defined" do
+        let(from_json) { LightStateMachine.from_json(to_json) }
+        let(to_json2) { from_json.to_json }
+
+        before_each do
+          state_machine.link_states
+        end
+
+        it "JSON values match" do
+          expect(to_json).to eq(to_json2)
+        end
       end
     end
 
@@ -142,7 +166,7 @@ Spectator.describe Smcr::Sm::StateMachine do
           expect(state_machine.history).to eq(history_expected)
         end
 
-        it "paths_allowed" do
+        it "paths_allowed_missing" do
           expect(state_machine.paths_allowed).to eq(paths_allowed_initially_expected)
         end
 

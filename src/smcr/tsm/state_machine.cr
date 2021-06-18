@@ -7,7 +7,7 @@ module Smcr
     class StateMachine(State) < Abstract::StateMachine(State)
       # include JSON::Serializable
 
-      # ERROR_KEY_PATHS_ALLOWED       = "paths_allowed"
+      # ERROR_PATHS_ALLOWED_MISSING       = "paths_allowed_missing"
       # ERROR_KEY_RESYNC_NEEDED       = "error_key_resync_needed"
       # ERROR_KEY_STATE_CHANGE_FAILED = "history"
 
@@ -52,35 +52,32 @@ module Smcr
         # history = nil, #  : Smcr::Abstract::History?
         paths_allowed : Smcr::Abstract::PathsAllowed? = nil
       )
-        super
         @tick = Smcr::Tsm::Tick.new(0)
+        super
+      end
+
+      def initialize(
+        state_default : State? = nil,
+        history_size : Smcr::Abstract::HistorySize? = nil,
+        state : State? = nil,
+        # history = nil, #  : Smcr::Abstract::History?
+        paths_allowed : Smcr::Abstract::PathsAllowed? = nil,
+        tick : Smcr::Tsm::Tick? = nil
+      )
+        @tick = Smcr::Tsm::Tick.new(0)
+        super(
+          state_default: state_default,
+          history_size: history_size,
+          state: state,
+          # history = nil, #  : Smcr::Abstract::History?
+          paths_allowed: paths_allowed
+        )
+        @tick = tick ? tick : Smcr::Tsm::Tick.new(0)
       end
 
       def replace_tick(prior_tick)
         @tick = prior_tick
       end
-
-      # def initialize(
-      #   state_default : State? = nil,
-      #   history_size : Abstract::HistorySize? = nil,
-      #   tick : Smcr::Tsm::Tick? = nil,
-      #   state : State? = nil,
-      #   history : Smcr::Abstract::History? = nil,
-      #   paths_allowed : Abstract::PathsAllowed? = nil
-      # )
-      #   @history_size = history_size ? history_size : Abstract::HistorySize.new(10)
-      #   @tick = tick ? tick : Smcr::Tsm::Tick.new(0)
-
-      #   @state_default = state_default ? state_default : State.values.first
-      #   @state = state ? state : @state_default
-
-      #   @history = history ? history : Smcr::Abstract::History.new
-      #   @paths_allowed = paths_allowed ? paths_allowed : Abstract::PathsAllowed.new # initial_default_path
-      #   init_paths
-
-      #   @errors = Abstract::CurrentErrors.new
-      #   validate
-      # end
 
       def init_history
         Smcr::Abstract::History.new
@@ -90,7 +87,7 @@ module Smcr
       #   @errors = Abstract::CurrentErrors.new
 
       #   if @paths_allowed.keys.empty? || @paths_allowed.values.map(&.empty?).all?
-      #     @errors[ERROR_KEY_PATHS_ALLOWED] = "must be an mapping of state to array of states"
+      #     @errors[ERROR_PATHS_ALLOWED_MISSING] = "must be an mapping of state to array of states"
       #   end
 
       #   @errors

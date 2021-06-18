@@ -3,12 +3,17 @@ require "./aliases.cr"
 module Smcr
   module Abstract
     # Simple State Machine
+    class InvalidStateMachine < Exception
+    end
+
     abstract class StateMachine(State)
       include JSON::Serializable
 
-      ERROR_KEY_PATHS_ALLOWED       = "paths_allowed"
-      ERROR_KEY_RESYNC_NEEDED       = "error_key_resync_needed"
-      ERROR_KEY_STATE_CHANGE_FAILED = "history"
+      ERROR_PATHS_ALLOWED_MISSING      = "paths_allowed_missing"
+      ERROR_PATHS_ALLOWED_FROM_INVALID = "paths_allowed_from_invalid"
+      ERROR_PATHS_ALLOWED_TO_INVALID   = "paths_allowed_to_invalid"
+      ERROR_KEY_RESYNC_NEEDED          = "error_key_resync_needed"
+      ERROR_KEY_STATE_CHANGE_FAILED    = "history"
 
       getter state_default : State
       getter history_size : Abstract::HistorySize
@@ -36,6 +41,10 @@ module Smcr
 
       def self.state_internal_values
         State.values.map(&.value) # Needed?
+      end
+
+      def self.state_names_to_internal_values
+        state_names.zip(state_internal_values).to_h
       end
 
       def other_state_internal_values
@@ -71,11 +80,36 @@ module Smcr
         @history = prior_history
       end
 
+      def self.from_json(string_or_io, root : String)
+        sm = super
+        sm.validate!
+        sm
+      end
+
+      def self.from_json(string_or_io)
+        sm = super
+        sm.validate!
+        sm
+      end
+
+      def validate!
+        validate
+        raise InvalidStateMachine.new(@errors.to_json) unless valid?
+      end
+
       def validate
         @errors.clear
 
+        # The 'add_path' and 'remove_path' methods should prevent the following.
+        # But, when doing 'from_json', we might need to check validity.
         if @paths_allowed.keys.empty? || @paths_allowed.values.map(&.empty?).all?
-          @errors[ERROR_KEY_PATHS_ALLOWED] = "must be an mapping of state to array of states"
+          @errors[ERROR_PATHS_ALLOWED_MISSING] = "must be an mapping of state to array of states"
+        end
+        if !(@paths_allowed.keys - StateMachine(State).state_internal_values).empty?
+          @errors[ERROR_PATHS_ALLOWED_FROM_INVALID] = "Each 'from' state internal value must be one of the valid state internal values"
+        end
+        if !(@paths_allowed.values.flatten.uniq! - StateMachine(State).state_internal_values).empty?
+          @errors[ERROR_PATHS_ALLOWED_TO_INVALID] = "Each 'to' state internal values must be one of the valid state internal values"
         end
 
         @errors
@@ -116,6 +150,14 @@ module Smcr
 
       def remove_path(state_from, state_to)
         @paths_allowed[state_from.value].delete(state_to.value) if @paths_allowed[state_from.value].includes?(state_to.value)
+      end
+
+      def link_states
+        self.class.state_values.each do |state_from|
+          self.class.state_values.each do |state_to|
+            add_path(state_from, state_to) unless state_from == state_to
+          end
+        end
       end
 
       # # # ATTEMPT STATE CHANGE
